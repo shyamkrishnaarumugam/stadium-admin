@@ -16,7 +16,7 @@ export default function SideBar() {
       </div>
       <div className='d-flex flex-column container'>
         <div className='mt-5'>
-        <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/home')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p>Dashboard</p></div>
+        <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p>Dashboard</p></div>
         <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/users')}><FontAwesomeIcon icon={faUser}  className='px-3 pt-1' /><p>Users</p></div>
         <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/venues')}><FontAwesomeIcon icon={faPaw}  className='px-3 pt-1' /><p>Venues</p></div>
         <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/booking')}><FontAwesomeIcon icon={faHand}  className='px-3 pt-1' /><p>Bookings</p></div>

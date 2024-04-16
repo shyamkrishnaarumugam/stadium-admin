@@ -92,6 +92,7 @@ export default function Cricket() {
         } catch (error) {
             
         }
+        handleShow();
     }
 
     useEffect(()=>{
@@ -111,7 +112,7 @@ export default function Cricket() {
                       </div>
                       <div className='d-flex flex-column container'>
                         <div className='mt-5'>
-                        <div className='d-flex flex-row sidebar-links ' onClick={()=>navigate('/home')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p className="">Dashboard</p></div>
+                        <div className='d-flex flex-row sidebar-links ' onClick={()=>navigate('/')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p className="">Dashboard</p></div>
                         <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/users')}><FontAwesomeIcon icon={faUser}  className='px-3 pt-1' /><p>Users</p></div>
                         
                         <div className='d-flex flex-row sidebar-links text-danger'><FontAwesomeIcon icon={faPaw}  className='px-3 pt-1' /><p><div class="dropdown">
@@ -188,7 +189,7 @@ export default function Cricket() {
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                 <Form.Label>Upload images:</Form.Label>
-                <Form.Control type="file" value={image} onChange={(e)=>setImage(e.target.value)} multiple />
+                <Form.Control type="file" value={image} accept='.jpg, .jpeg, .png' onChange={(e)=>setImage(e.target.value)} multiple />
                 
             </Form.Group>
             {/* <img src={URL.createObjectURL(image)} /> */}
@@ -272,7 +273,7 @@ export default function Cricket() {
                                 <th >Direction</th>
                                 <th>Contact No.</th>
                                 <th style={{paddingRight:'100px', paddingLeft:'100px'}}>Description</th>
-                                
+                                <th>image</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
                             </tr>
@@ -290,7 +291,7 @@ export default function Cricket() {
                                 <td>{value.direction}</td>
                                 <td>{value.contact}</td>
                                 <td>{value.description}</td>
-                                
+                                <td>{value.image}</td>
                                 <td><Button variant='warning' onClick={()=>editId(value.id)}>Edit</Button></td>
                                 <td><Button variant='danger' onClick={()=>deleteId(value.id)}>Delete</Button></td>
                             </tr>

@@ -38,7 +38,7 @@ export default function Badminton() {
                       </div>
                       <div className='d-flex flex-column container'>
                         <div className='mt-5'>
-                        <div className='d-flex flex-row sidebar-links ' onClick={()=>navigate('/home')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p className="">Dashboard</p></div>
+                        <div className='d-flex flex-row sidebar-links ' onClick={()=>navigate('/')}><FontAwesomeIcon icon={faHouseChimney} className='px-3 pt-1' /><p className="">Dashboard</p></div>
                         <div className='d-flex flex-row sidebar-links' onClick={()=>navigate('/users')}><FontAwesomeIcon icon={faUser}  className='px-3 pt-1' /><p>Users</p></div>
                         
                         <div className='d-flex flex-row sidebar-links text-danger'><FontAwesomeIcon icon={faPaw}  className='px-3 pt-1' /><p><div class="dropdown">

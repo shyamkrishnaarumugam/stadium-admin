@@ -21,14 +21,13 @@ export default function Login() {
       e.preventDefault();
     
       try {
-        if (!username && !password) {
+        if (!username || !password) { // Changed from && to ||
           throw new Error("Username or password is empty");
         }
-    
-        const response = await axios.get(
-          `http://localhost/stadium-backend/login-admin.php`,
+      
+        const response = await axios.post(
+          'http://localhost/stadium-backend/login-admin.php',
           {
-            action: 'login-admin.php',
             Username: username,
             Password: password,
           },
@@ -38,10 +37,10 @@ export default function Login() {
             }
           }
         );
-    
+      
         if (response.data.status === 'success') {
           localStorage.setItem("credentials", JSON.stringify(response.data.user_details));
-          navigate("/home");
+          navigate("/");
         } else {
           setError("Incorrect username or password");
         }
@@ -67,7 +66,7 @@ export default function Login() {
       <FloatingLabel controlId="floatingPassword" label="Password" className='mb-3'>
         <Form.Control type="password"  placeholder="Password" onChange={onChangeName}/>
       </FloatingLabel>
-      <Button variant="success" type='submit' className='mx-auto d-block '>Login</Button>
+      <Button variant="success" type='submit' className='mx-auto d-block ' onClick={handleLogin}>Login</Button>
       </Form>
       </Card>
       
