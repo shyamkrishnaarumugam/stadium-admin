@@ -39,6 +39,11 @@ export default function Alerts() {
     showAlert();
 
     },[]);
+    const handleLogout=(e)=>{
+
+      localStorage.removeItem('admin')
+      navigate("/login");
+  }
 
     const showAlert = async () => {
       try {
@@ -46,9 +51,11 @@ export default function Alerts() {
         const responseData = Array.isArray(response.data) ? response.data : [];
         setGetAlert(responseData);
         showAlert();
+        
       } catch (err) {
         console.error('Error:', err);
       }
+      
     }
     
 
@@ -74,7 +81,10 @@ export default function Alerts() {
       //  window.location.reload();
    
     }
-
+    React.useEffect(()=>{
+      if(!localStorage.getItem('admin')) navigate('/login');
+    },[]);
+    
     
   return (
    <>
@@ -112,7 +122,7 @@ export default function Alerts() {
         <Modal.Body>Are you sure to Logout!</Modal.Body>
         <Modal.Footer>
 
-          <Button variant="danger" onClick={()=>navigate('/login')}>
+          <Button variant="danger" onClick={handleLogout}>
             Logout
           </Button>
         </Modal.Footer>

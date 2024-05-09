@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
-import Header from './Header'
 import { Button, Col, Container, Form, Modal, Row, Table,Dropdown } from 'react-bootstrap'
-import SideBar from './SideBar'
 import Footer from './Footer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlus, faCircleUser, faHand, faHouseChimney } from '@fortawesome/free-solid-svg-icons'
@@ -15,16 +13,104 @@ export default function Venues() {
     const handleCloseNew = () => setShowNew(false);
     const handleShowNew = () => setShowNew(true);
 
-
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
     const [logout, setLogout] =useState(false);
     const hideLogout =()=>{setLogout(false)};
     const showLogout = ()=>{setLogout(true)};
+    const [getData,setGetData] = useState([]);
 
     const navigate= useNavigate();
+    const handleImageChange=(e)=>{
+      
+      const file=e.target.files[0];
+      setDatas({...datas,image:file})
+  }
+  
+  const handleSubmit= async(e)=>{
+      e.preventDefault();
+      const formData= new FormData();
+      formData.append('name',name);
+      formData.append('games',games);
+      formData.append('address',address);
+      formData.append('city',city);
+      formData.append('direction',direction);
+      formData.append('contact',contact);
+      formData.append('description',description);
+      formData.append('amount',amount);
+      formData.append('image',datas.image);
+          try {
+              const response = await axios.post(`http://localhost/stadium-backend/addFootball.php`,formData,
+          {
+              headers:{
+                  'Content-Type':'application.json'
+              }
+          });
+          setShowNew(false);
+          console.log(response.data);
+          getCricket();
+          } 
+          catch (error) {
+              console.error(error);
+          }
+  setName('');
+  setGames('');
+  setAddress('');
+  setCity('');
+  setDirection('');
+  setContact('');
+  setDescription('');
+  setAmount('');
+  setDatas('');
+}
+// const [id,setId]= useState();
+const [name,setName] = useState();
+const [games,setGames] = useState();
+const [address,setAddress] = useState();
+const [city,setCity] = useState();
+const [direction,setDirection] = useState();
+const [contact,setContact] = useState();
+const [description,setDescription] = useState();
+const [amount,setAmount] = useState();
+const [datas,setDatas]= useState({
+  image:null
+});
+
+  const getCricket=async()=>{
+      try {
+          const response = await axios.get(`http://localhost/stadium-backend/getFootball.php`);
+          const convert = await response.data;
+          if(Array.isArray(convert)){
+              setGetData(convert);
+          }
+          
+
+      } catch (error) {
+          console.error(error);
+      }    
+  };
+  const handleLogout=(e)=>{
+
+    localStorage.removeItem('admin')
+    navigate("/login");
+}
+
+  React.useEffect(()=>{
+      getCricket();
+  }, []);
+
+  const deleteId=async(id)=>{
+      try {
+          const response=await axios.get(`http://localhost/stadium-backend/deleteFootball.php?id=${id}`);
+          
+
+      } catch (error) {
+          
+      }
+      getCricket();
+  }
+  React.useEffect(()=>{
+    if(!localStorage.getItem('admin')) navigate('/login');
+  },[]);
+  
   return (
     <>
      
@@ -71,7 +157,7 @@ export default function Venues() {
         <Modal.Body>Are you sure to Logout!</Modal.Body>
         <Modal.Footer>
 
-          <Button variant="danger" onClick={()=>navigate('/login')}>
+          <Button variant="danger" onClick={handleLogout}>
             Logout
           </Button>
         </Modal.Footer>
@@ -81,145 +167,115 @@ export default function Venues() {
                     <Col>
 {/* modal box create */}
 <Modal show={showNew} onHide={handleCloseNew} size='lg'>
-                            <Modal.Header closeButton>
-                            <Modal.Title className='text-decoration-underline'>Update the Datas</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                            <Form>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Name:</Form.Label>
-                                <Form.Control type="text" value={''} autoFocus />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Games:</Form.Label>
-                                <Form.Control type="text" value={''} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Address:</Form.Label>
-                                <Form.Control type="text" value={''} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>City:</Form.Label>
-                                <Form.Control type="text" value={''} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Direction:</Form.Label>
-                                <Form.Control type="text" value={''}  />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Contact No.:</Form.Label>
-                                <Form.Control type="text" value={'double double'}  />
-                                </Form.Group>
-                                <Form.Group
-                                className="mb-3"
-                                controlId="exampleForm.ControlTextarea1"
-                                >
-                                <Form.Label>Description:</Form.Label>
-                                <Form.Control as="textarea" rows={3} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Upload images:</Form.Label>
-                                <Form.Control type="file"  multiple />
-                                </Form.Group>
-                            </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                            <Button variant="primary" onClick={handleClose}>
-                                Save Changes
-                            </Button>
-                            </Modal.Footer>
-                        </Modal>
+    <Modal.Header closeButton>
+        <Modal.Title className='text-decoration-underline'>Add Football Data</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+        <Form>
+            <Form.Group className="mb-3">
+                <Form.Label>Name:</Form.Label>
+                <Form.Control type="text" value={name} onChange={(e)=>setName(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Games:</Form.Label>
+                <Form.Control type="text" value={games} onChange={(e)=>setGames(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Address:</Form.Label>
+                <Form.Control type="text" value={address} onChange={(e)=>setAddress(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>City:</Form.Label>
+                <Form.Control type="text" value={city} onChange={(e)=>setCity(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Direction:</Form.Label>
+                <Form.Control type="text" value={direction} onChange={(e)=>setDirection(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput">
+                <Form.Label>Contact No.:</Form.Label>
+                <Form.Control type="text" value={contact} onChange={(e)=>setContact(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                <Form.Label>Description:</Form.Label>
+                <Form.Control as="textarea" rows={3} value={description} onChange={(e)=>setDescription(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label>Upload images:</Form.Label>
+                <Form.Control type="file"  accept='.jpg, .jpeg, .png' onChange={handleImageChange} multiple />
+
+                
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput">
+                <Form.Label>Amount:</Form.Label>
+                <Form.Control type="text" value={amount} onChange={(e)=>setAmount(e.target.value)} />
+            </Form.Group>
+            {datas.image && (
+            <img
+              src={URL.createObjectURL(datas.image)}
+              alt="Profile Preview"
+              style={{ maxWidth: '200px', marginTop: '10px' }}
+            />
+          )}
+            {/* <img src={URL.createObjectURL(image)} /> */}
+        </Form>
+    </Modal.Body>
+    <Modal.Footer>
+   
+        <Button variant="secondary" onClick={handleCloseNew}>
+            Close
+        </Button>
+        <Button variant="primary" onClick={handleSubmit}>
+            Save Changes
+        </Button>
+    </Modal.Footer>
+</Modal>
+
 {/* modal box end */}
-{/* modal box edit */}
-                        <Modal show={show} onHide={handleClose} size='lg'>
-                            <Modal.Header closeButton>
-                            <Modal.Title className='text-decoration-underline'>Update the Datas</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                            <Form>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Name:</Form.Label>
-                                <Form.Control type="text" value={'double double'} autoFocus />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Games:</Form.Label>
-                                <Form.Control type="text" value={'double double'} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Address:</Form.Label>
-                                <Form.Control type="text" value={'double double'} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>City:</Form.Label>
-                                <Form.Control type="text" value={'double double'} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Direction:</Form.Label>
-                                <Form.Control type="text" value={'double double'} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Contact No.:</Form.Label>
-                                <Form.Control type="text" value={'double double'} />
-                                </Form.Group>
-                                <Form.Group
-                                className="mb-3"
-                                controlId="exampleForm.ControlTextarea1"
-                                >
-                                <Form.Label>Description:</Form.Label>
-                                <Form.Control as="textarea" rows={3} />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Label>Upload images:</Form.Label>
-                                <Form.Control type="file"  multiple />
-                                </Form.Group>
-                            </Form>
-                            </Modal.Body>
-                            <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                            <Button variant="primary" onClick={handleClose}>
-                                Save Changes
-                            </Button>
-                            </Modal.Footer>
-                        </Modal>
-{/* modal box end */}
+
 <div className='overflow-auto scroll' style={{maxHeight:'600px'}}>
                     <Table bordered hover striped className='table-venues'>
-                        <thead  className="position-sticky top-0 bg-info">
+                    <thead  className="position-sticky top-0 bg-info" >
                             <tr>
-                                <th>id</th>
+                                <th>S.No.</th>
                                 <th>Name</th>
                                 <th>Games</th>
                                 <th>Address</th>
                                 <th>City</th>
-                                <th>Direction</th>
+                                <th >Direction</th>
                                 <th>Contact No.</th>
                                 <th style={{paddingRight:'100px', paddingLeft:'100px'}}>Description</th>
-                                <th>Upload images</th>
-                                <th>Edit</th>
+                                <th>Amount</th>
+                                <th>image</th>
+                                {/* <th>Edit</th> */}
                                 <th>Delete</th>
                             </tr>
                         </thead>
+                      
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Double Double</td>
-                                <td>Criket, Football</td>
-                                <td>No.2 First cross, lawspet</td>
-                                <td>lawspet</td>
-                                <td>location</td>
-                                <td>+918974586598</td>
-                                <td>Stadiums in ancient Greece and Rome were built for different purposes, and at first only the Greeks built structures called "stadium"; Romans built structures called "circus". Greek stadia were for foot races, whereas the Roman circus was for horse races. Both had similar shapes and bowl-like areas around them for spectators. The Greeks also developed the theatre, with its seating arrangements foreshadowing those of modern stadiums.</td>
-                                <td><input type='file' multiple /></td>
-                                <td><Button variant='warning'  onClick={handleShow}>Edit</Button></td>
-                                <td><Button variant='danger'>Delete</Button></td>
+                            {getData.length>0 ?
+                        (getData.map((value,index)=>(
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{value.name}</td>
+                                <td>{value.games}</td>
+                                <td>{value.address}</td>
+                                <td>{value.city}</td>
+                                <td>{value.direction}</td>
+                                <td>{value.contact}</td>
+                                <td>{value.description}</td>
+                                <td>{value.amount}</td>
+                                <td><img src={`http://localhost/stadium-backend/${value.image}`} style={{maxWidth:150}} />
+                                {/* <a href={`http://localhost/stadium-backend/${value.image}`} >link</a> */}
+                                </td>  
+                                {/* {console.log(value.image)} */}
+                                {/* <td><Button variant='warning' onClick={()=>editId(value)}>Edit</Button></td> */}
+                                <td><Button variant='danger' onClick={()=>deleteId(value.id)}>Delete</Button></td>
                             </tr>
-                           
+                            ) ))
+                            :<p>no data Found</p>}
                         </tbody>
+                      
                     </Table>
                     </div>
                     </Col>

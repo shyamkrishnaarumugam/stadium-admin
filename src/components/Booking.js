@@ -6,7 +6,7 @@ import { faCircleUser, faHand, faHouseChimney } from '@fortawesome/free-solid-sv
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { faBell, faPaw, faUser } from '@fortawesome/fontawesome-free-solid'
-
+import axios from 'axios'
 export default function Booking() {
     const navigate = useNavigate();
 
@@ -14,6 +14,41 @@ export default function Booking() {
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+    const [getBooking,setGetBooking] = useState([]);
+
+
+    React.useEffect(()=>{
+     
+      showBooking();
+  
+      },[]);
+  
+      const showBooking = async () => {
+        try {
+          const response = await axios.get(`http://localhost/stadium-backend/getBooking.php`);
+          const responseData = Array.isArray(response.data) ? response.data : [];
+          setGetBooking(responseData);
+          showBooking();
+        } catch (err) {
+          console.error('Error:', err);
+        }
+      }
+
+
+      const handleDelete=async(id)=>{
+          await axios.get(`http://localhost/stadium-backend/deleteBooking.php?id=${id}`);
+          
+      }
+      const handleLogout=(e)=>{
+
+        localStorage.removeItem('admin')
+        navigate("/login");
+    }
+  
+      React.useEffect(()=>{
+        if(!localStorage.getItem('admin')) navigate('/login');
+      },[]);
+      
   return (
     <>
       
@@ -50,7 +85,7 @@ export default function Booking() {
         <Modal.Body>Are you sure to Logout!</Modal.Body>
         <Modal.Footer>
 
-          <Button variant="danger" onClick={()=>navigate('/login')}>
+          <Button variant="danger" onClick={handleLogout}>
             Logout
           </Button>
         </Modal.Footer>
@@ -62,73 +97,39 @@ export default function Booking() {
                     <Table bordered hover striped responsive>
                         <thead  className="sticky-top bg-info">
                             <tr>
-                                <th>id</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Username</th>
-                                <th>Phone Number</th>
+                              <th>S.No.</th>  
+                              <th>Name</th>
+                              <th>Phone Number</th>
+                              <th>venue</th>
+                              <th>Date</th>
+                              <th>Slot</th>
+                              <th>Amount</th>
+                              <th>Delete</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
+                        <tbody >
+
+                          {getBooking.length>0 ?(
+                          getBooking.map((value,index)=>(
+
+                         
+                            <tr key={index}>
+                                <td>{index + 1}</td>
+                                <td>{value.name}</td>
+                                <td>{value.phone}</td>
+                                <td>{value.venue}</td>
+                                <td>{value.date}</td>
+                                <td>{value.slot}</td>
+                                <td>{value.amount}</td>
+                                <td><Button className="float-end" variant="danger" onClick={()=>handleDelete(value.id)}>
+                          Delete
+                        </Button></td>
                             </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>john</td>
-                                <td>12345</td>
-                                
-                            </tr>
+                            ))
                             
-                            
-                            
+                          ):(
+                            <tr>no data found</tr>
+                          )}
                         </tbody>
                     </Table>
                     </div>

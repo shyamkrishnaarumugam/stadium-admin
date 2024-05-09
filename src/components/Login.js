@@ -1,19 +1,21 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, FloatingLabel, Form } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 export default function Login() {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [getLogin,setGetLogin] = useState();
   const onChangeName=(e)=>{
-    setUsername({username})
+    setUsername(e.target.value)
   }
-
+ useEffect(()=>{
+  if(localStorage.getItem('admin')) navigate('/')
+ })
   const onChangePassword=(e)=>{
-    setPassword({password})
+    setPassword(e.target.value)
   }
 
 
@@ -25,21 +27,22 @@ export default function Login() {
           throw new Error("Username or password is empty");
         }
       
-        const response = await axios.post(
-          'http://localhost/stadium-backend/login-admin.php',
-          {
-            Username: username,
-            Password: password,
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-      
+        const response = await axios.post('http://localhost/stadium-backend/login-admin.php',
+
+        { action:'login',
+          username:username,
+          password:password
+        },
+      {
+
+        headers:{
+          'content-type':'application.json'
+        }
+      });
+      // setGetLogin(response.data);
+      // console.log(response.data);
         if (response.data.status === 'success') {
-          localStorage.setItem("credentials", JSON.stringify(response.data.user_details));
+          localStorage.setItem("admin",true);
           navigate("/");
         } else {
           setError("Incorrect username or password");
@@ -51,7 +54,6 @@ export default function Login() {
   };
   return (
     <>
-
     <div className='login-bg d-flex '>
      
     <Card className='login-card w-25 p-5 mx-auto my-auto'>
@@ -64,12 +66,12 @@ export default function Login() {
         <Form.Control type="text"   placeholder="name@example.com" onChange={onChangeName} />
       </FloatingLabel>
       <FloatingLabel controlId="floatingPassword" label="Password" className='mb-3'>
-        <Form.Control type="password"  placeholder="Password" onChange={onChangeName}/>
+        <Form.Control type="password"  placeholder="Password" onChange={onChangePassword}/>
       </FloatingLabel>
-      <Button variant="success" type='submit' className='mx-auto d-block ' onClick={handleLogin}>Login</Button>
+      <Button variant="success" type='submit' className='mx-auto d-block ' >Login</Button>
       </Form>
+      {error && <div className='error-message text-danger'>{error}</div>}
       </Card>
-      
       </div>
     </>
   )

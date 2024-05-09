@@ -6,7 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser, faHand, faHouseChimney, faPeopleGroup } from '@fortawesome/free-solid-svg-icons';
 import { faBell, faBookmark, faDice, faPaw, faPuzzlePiece, faUser } from '@fortawesome/fontawesome-free-solid';
 import Footer from './Footer';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 export default function Home() {
   const navigate = useNavigate();
@@ -14,7 +16,59 @@ export default function Home() {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const [logout,setLogout] = useState(false);
+  const [students,setStudents] = useState();
+  const [bookings,setBookings]=useState();
+  const [cricket,setCricket]=useState();
+  const [football,setFootball] = useState();
+  const [badminton,setBadminton]=useState();
+  const [venues,setVenues] = useState();
+React.useEffect(()=>{
+  if(!localStorage.getItem('admin')) navigate('/login');
 
+  getStudents();
+  getBookings();
+  getVenues();
+},[]);
+
+  const handleLogout=(e)=>{
+
+      localStorage.removeItem('admin')
+      navigate("/login");
+  }
+
+  const getStudents=async()=>{
+    try {
+      const response = await axios.get(`http://localhost/stadium-backend/noOfStudends.php`);
+      setStudents(response.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const getBookings=async()=>{
+    try {
+      const response = await axios.get(`http://localhost/stadium-backend/numOfBooking.php`);
+      setBookings(response.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const getVenues=async()=>{
+    try {
+      const responseCricket = await axios.get(`http://localhost/stadium-backend/numOfCricket.php`);
+      setCricket(responseCricket.data);
+      const responseFootball = await axios.get(`http://localhost/stadium-backend/numOfFootball.php`);
+      setFootball(responseFootball.data);
+      const responseBadminton = await axios.get(`http://localhost/stadium-backend/numOfBadminton.php`);
+      setBadminton(responseBadminton.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     
     <>
@@ -54,7 +108,7 @@ export default function Home() {
         <Modal.Body>Are you sure to Logout!</Modal.Body>
         <Modal.Footer>
 
-          <Button variant="danger" onClick={()=>navigate('/login')}>
+          <Button variant="danger" onClick={handleLogout}>
             Logout
           </Button>
         </Modal.Footer>
@@ -63,7 +117,7 @@ export default function Home() {
                     <Row>
                       <Col md={'3'}>
                           <Card className='card-cus bg-primary' style={{color:'white'}}>
-                            <h1>1000</h1>
+                            <h1>{students}</h1>
                             <p>Total students enrolled</p>
                             <FontAwesomeIcon icon={faPeopleGroup} className='card-icons' />
                           </Card> 
@@ -72,21 +126,21 @@ export default function Home() {
                       </Col>
                       <Col md={'3'}>
                       <Card className='card-cus bg-secondary' style={{color:'white'}}>
-                            <h1>110</h1>
+                            <h1>{cricket+football+badminton}</h1>
                             <p>Total Venues registered</p>
                             <FontAwesomeIcon icon={faPuzzlePiece} className='card-icons' />
                           </Card>
                         </Col>
                         <Col md={'3'}>
                         <Card className='card-cus bg-success' style={{color:'white'}}>
-                            <h1>10</h1>
+                            <h1>{bookings}</h1>
                             <p>Total slots booked</p>
                             <FontAwesomeIcon icon={faBookmark} className='card-icons' />
                           </Card>
                         </Col>
                         <Col md={'3'}>
                         <Card className='card-cus bg-danger' style={{color:'white'}}>
-                            <h1>9</h1>
+                            <h1>3</h1>
                             <p>Total Games</p>
                             <FontAwesomeIcon icon={faDice} className='card-icons' />
                           </Card>

@@ -7,6 +7,7 @@ import Footer from './Footer'
 import { faCircleUser, faHand, faHouseChimney } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { faBell, faPaw, faUser } from '@fortawesome/fontawesome-free-solid'
+import axios from 'axios'
 
 export default function Users() {
     const navigate= useNavigate();
@@ -17,23 +18,31 @@ export default function Users() {
 
     const [data,setData]= useState([]);
 
+    const handleLogout=(e)=>{
+
+      localStorage.removeItem('admin')
+      navigate("/login");
+  }
+
     useEffect(()=>{
-        fetchData();
+  if(!localStorage.getItem('admin')) navigate('/login');
+      
+    fetchData();
+
     },[]);
 
     const fetchData=async()=>{
-        const getData = await fetch(`http://localhost/stadium-backend/get.php`);
-        const response = await getData.json();
-        setData(response);
-        fetchData();
-    };
+      const getData = await axios.get(`http://localhost/stadium-backend/get.php`);
+      const response = Array.isArray(getData.data) ? getData.data : [];
+      setData(response);
+      console.log(setData);
+      // fetchData();
+  };
 
     const handleDelete=async(id)=>{
         
         try{
-        const delteData = await fetch(`http://localhost/stadium-backend/deleteUser.php?id=${id}`,{
-            method:'DELETE'
-        });
+        await axios.get(`http://localhost/stadium-backend/deleteUser.php?id=${id}`);
     
     }
     catch(err){
@@ -42,6 +51,7 @@ export default function Users() {
     // window.location.reload();
 
 }
+
   
   return (
     <>
@@ -79,7 +89,7 @@ export default function Users() {
         <Modal.Body>Are you sure to Logout!</Modal.Body>
         <Modal.Footer>
 
-          <Button variant="danger" onClick={()=>navigate('/login')}>
+          <Button variant="danger" onClick={handleLogout}>
             Logout
           </Button>
         </Modal.Footer>
@@ -100,17 +110,16 @@ export default function Users() {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((value,index)=>
+                          {data.map((value,index)=>(
                             <tr key={index}>
-                                <td>{value.id}</td>
+                                <td>{index+1}</td>
                                 <td>{value.name}</td>
                                 <td>{value.email}</td>
                                 <td>{value.username}</td>
                                 <td>{value.password}</td>
                                 <td><Button variant='danger' onClick={()=>handleDelete(value.id)}>Delete</Button></td>
                             </tr>
-                            )}
-                            
+                             ) ) }
                         </tbody>
                     </Table>
                     </div>
